@@ -6,28 +6,29 @@ use serde::{Deserialize, Serialize};
 pub struct InitMsg {
     pub snip_addr: HumanAddr,
     pub snip_hash: String,
+    pub market_addr:HumanAddr
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum HandleMsg {
-    /*Receive{
-        sender:HumanAddr,
-        from:HumanAddr,
-        amount:Uint128,
-        memo:Option<String>,
-        msg:Binary
-    }*/
+    
     FeedPet {
         amount: Uint128,
         viewing_key: String,
+        pet_name:String
     },
+    CreateNewPet{
+        pet_name:String,
+        owner:HumanAddr
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum QueryMsg {
-    LastFeeding {},
+  Pet{name:String},
+  Pets{page_num:u64,page_size:u64}
    
 }
 

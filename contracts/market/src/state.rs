@@ -2,33 +2,54 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use cosmwasm_std::{
-    Api, Extern, HandleResponse, HumanAddr, Querier, StdError, StdResult, Storage,
-    Uint128, Binary,
+    to_binary, Api, CosmosMsg, Extern, HandleResponse, HumanAddr, Querier, StdError,
+    StdResult, Storage, Uint128, WasmMsg,
 };
 use cosmwasm_storage::{singleton, singleton_read, ReadonlySingleton, Singleton};
 use secret_toolkit::snip20::mint_msg;
 
+use crate::msg::PetMsg;
+
 pub static CONFIG_KEY: &[u8] = b"config";
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+pub struct ContractInfo {
+    pub addr: HumanAddr,
+    pub hash: String,
+}
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct State {
     pub total_amount: Uint128,
-    pub snip_addr: HumanAddr,
-    pub snip_hash: String,
+    pub food_contract: ContractInfo,
+    pub pet_contract: ContractInfo,
 }
 
 impl State {
     pub fn get_snip_addr<S: Storage, A: Api, Q: Querier>(
         deps: &Extern<S, A, Q>,
     ) -> Result<HumanAddr, StdError> {
-       Ok(config_read(&deps.storage).load()?.snip_addr)
+        Ok(config_read(&deps.storage).load()?.food_contract.addr)
     }
 
     pub fn get_snip_hash<S: Storage, A: Api, Q: Querier>(
         deps: &Extern<S, A, Q>,
     ) -> Result<String, StdError> {
-        Ok(config_read(&deps.storage).load()?.snip_hash)
+        Ok(config_read(&deps.storage).load()?.food_contract.hash)
     }
+
+    pub fn get_pet_addr<S: Storage, A: Api, Q: Querier>(
+        deps: &Extern<S, A, Q>,
+    ) -> Result<HumanAddr, StdError> {
+        Ok(config_read(&deps.storage).load()?.pet_contract.addr)
+    }
+
+    pub fn get_pet_hash<S: Storage, A: Api, Q: Querier>(
+        deps: &Extern<S, A, Q>,
+    ) -> Result<String, StdError> {
+        Ok(config_read(&deps.storage).load()?.pet_contract.hash)
+    }
+
     pub fn increase_total_amount<S: Storage, A: Api, Q: Querier>(
         deps: &mut Extern<S, A, Q>,
         amount: Uint128,
@@ -44,7 +65,7 @@ impl State {
         amount: Uint128,
         contract_hash: String,
         contract_addr: HumanAddr,
-        data:Binary
+       
     ) -> StdResult<HandleResponse> {
         let message = mint_msg(
             recipient,
@@ -59,8 +80,27 @@ impl State {
         return Ok(HandleResponse {
             messages: vec![message],
             log: vec![],
-            data:Some(data),
+            data: None,
         });
+    }
+    pub fn buy_pet(
+        owner_addr: HumanAddr,
+        pet_name: &str,
+        pet_hash: String,
+        pet_addr: HumanAddr,
+    ) -> StdResult<HandleResponse> {
+        let msg = to_binary(&PetMsg::create_new_pet(pet_name, owner_addr))?;
+        let message = CosmosMsg::Wasm(WasmMsg::Execute {
+            contract_addr: pet_addr,
+            callback_code_hash: pet_hash,
+            msg,
+            send: vec![],
+        });
+        Ok(HandleResponse {
+            messages: vec![message],
+            log: vec![],
+            data: None,
+        })
     }
 }
 

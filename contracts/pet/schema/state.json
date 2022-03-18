@@ -3,35 +3,19 @@
   "title": "State",
   "type": "object",
   "required": [
-    "pet",
-    "snip_info"
+    "food_contract",
+    "market_addr"
   ],
   "properties": {
-    "pet": {
-      "$ref": "#/definitions/Pet"
+    "food_contract": {
+      "$ref": "#/definitions/ContractInfo"
     },
-    "snip_info": {
-      "$ref": "#/definitions/SnipInfo"
+    "market_addr": {
+      "$ref": "#/definitions/HumanAddr"
     }
   },
   "definitions": {
-    "HumanAddr": {
-      "type": "string"
-    },
-    "Pet": {
-      "type": "object",
-      "required": [
-        "last_feeding"
-      ],
-      "properties": {
-        "last_feeding": {
-          "type": "integer",
-          "format": "uint64",
-          "minimum": 0.0
-        }
-      }
-    },
-    "SnipInfo": {
+    "ContractInfo": {
       "type": "object",
       "required": [
         "addr",
@@ -45,6 +29,9 @@
           "type": "string"
         }
       }
+    },
+    "HumanAddr": {
+      "type": "string"
     }
   }
 }

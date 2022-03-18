@@ -12,6 +12,25 @@
           "type": "object"
         }
       }
+    },
+    {
+      "type": "object",
+      "required": [
+        "buy_pet"
+      ],
+      "properties": {
+        "buy_pet": {
+          "type": "object",
+          "required": [
+            "pet_name"
+          ],
+          "properties": {
+            "pet_name": {
+              "type": "string"
+            }
+          }
+        }
+      }
     }
   ]
 }

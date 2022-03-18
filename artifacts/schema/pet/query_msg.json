@@ -5,11 +5,46 @@
     {
       "type": "object",
       "required": [
-        "last_feeding"
+        "pet"
       ],
       "properties": {
-        "last_feeding": {
-          "type": "object"
+        "pet": {
+          "type": "object",
+          "required": [
+            "name"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "required": [
+        "pets"
+      ],
+      "properties": {
+        "pets": {
+          "type": "object",
+          "required": [
+            "page_num",
+            "page_size"
+          ],
+          "properties": {
+            "page_num": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "page_size": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            }
+          }
         }
       }
     }

@@ -3,10 +3,14 @@
   "title": "InitMsg",
   "type": "object",
   "required": [
+    "market_addr",
     "snip_addr",
     "snip_hash"
   ],
   "properties": {
+    "market_addr": {
+      "$ref": "#/definitions/HumanAddr"
+    },
     "snip_addr": {
       "$ref": "#/definitions/HumanAddr"
     },

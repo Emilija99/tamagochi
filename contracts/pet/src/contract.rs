@@ -1,30 +1,31 @@
+use std::convert::TryInto;
+
 use cosmwasm_std::{
-    to_binary, Api, Binary, Env, Extern, HandleResponse, InitResponse, Querier, StdError,
-    StdResult, Storage, Uint128,
+    to_binary, to_vec, Api, Binary, Env, Extern, HandleResponse, HumanAddr, InitResponse, Querier,
+    StdError, StdResult, Storage, Uint128,
 };
 
-use crate::msg::{HandleMsg, InitMsg, LastFeedingResponse, QueryMsg};
-use crate::state::{config, SnipInfo, State};
+use crate::msg::{HandleMsg, InitMsg,  QueryMsg};
+use crate::state::{config, ContractInfo, Pet, State};
 
 pub fn init<S: Storage, A: Api, Q: Querier>(
     deps: &mut Extern<S, A, Q>,
     env: Env,
     msg: InitMsg,
 ) -> StdResult<InitResponse> {
+    deps.storage.set(b"total", &to_vec(&0)?);
     let state = State {
-        snip_info: SnipInfo {
+        food_contract: ContractInfo {
             addr: msg.snip_addr,
             hash: msg.snip_hash,
         },
 
-        pet: crate::state::Pet {
-            last_feeding: env.block.time,
-        },
+      
+        market_addr: msg.market_addr,
     };
 
     config(&mut deps.storage).save(&state)?;
     Ok(InitResponse::default())
-  
 }
 
 pub fn handle<S: Storage, A: Api, Q: Querier>(
@@ -36,8 +37,32 @@ pub fn handle<S: Storage, A: Api, Q: Querier>(
         HandleMsg::FeedPet {
             amount,
             viewing_key,
-        } => try_feed(deps, env, amount, viewing_key),
+            pet_name,
+        } => try_feed(deps, env, amount, viewing_key, pet_name),
+        HandleMsg::CreateNewPet { pet_name, owner } => try_create_pet(deps, env, pet_name, owner),
     }
+}
+
+pub fn try_create_pet<S: Storage, A: Api, Q: Querier>(
+    deps: &mut Extern<S, A, Q>,
+    env: Env,
+    pet_name: String,
+    owner: HumanAddr,
+) -> StdResult<HandleResponse> {
+    if env.message.sender.ne(&State::get_market_addr(deps)?) {
+        return Err(StdError::unauthorized());
+    }
+    if Pet::name_already_exists(deps, &pet_name)? {
+        return Err(StdError::generic_err("Pet name already exists"));
+    }
+    let new_pet = Pet::new(
+        Pet::next_id(deps)?,
+        pet_name,
+        env.block.time,
+        deps.api.canonical_address(&owner)?,
+    );
+    Pet::add_new_pet(deps, &new_pet)?;
+    Ok(HandleResponse::default())
 }
 
 pub fn try_feed<S: Storage, A: Api, Q: Querier>(
@@ -45,14 +70,24 @@ pub fn try_feed<S: Storage, A: Api, Q: Querier>(
     env: Env,
     amount: Uint128,
     viewing_key: String,
+    pet_name: String,
 ) -> StdResult<HandleResponse> {
-    if State::is_pet_alive(deps, env.block.time)? == false {
-        return Err(StdError::generic_err("Pet is dead"));
+    let mut pet = Pet::get_pet(deps, &pet_name)?;
+    if pet
+        .owner
+        .ne(&deps.api.canonical_address(&env.message.sender)?)
+    {
+        return Err(StdError::unauthorized());
+    }
+    if Pet::can_pet_be_fed(pet.last_feeding, env.block.time) == false {
+        return Err(StdError::generic_err("Pet can't be fed now"));
     }
     if State::check_balance(deps, viewing_key, env.message.sender.clone())? < Uint128(100) {
         return Err(StdError::generic_err("Not enough tokens"));
     }
-    State::set_last_feeding(deps, env.block.time)?;
+
+    pet.last_feeding = env.block.time;
+    Pet::update_pet(deps, &pet)?;
     State::burn_tokens(deps, amount, env.message.sender)
 }
 
@@ -61,19 +96,24 @@ pub fn query<S: Storage, A: Api, Q: Querier>(
     msg: QueryMsg,
 ) -> StdResult<Binary> {
     match msg {
-        QueryMsg::LastFeeding {} => to_binary(&query_feeding(deps)?),
+        QueryMsg::Pet { name } => to_binary(&query_pet(deps,&name)?),
+        QueryMsg::Pets { page_num, page_size } => to_binary(&query_pets(deps,page_num,page_size)?),
     }
 }
+fn query_pet<S: Storage, A: Api, Q: Querier>(deps: &Extern<S, A, Q>,name:&str)->StdResult<Pet>{
+    Ok(Pet::get_pet(deps, name)?)
+}
 
-fn query_feeding<S: Storage, A: Api, Q: Querier>(
+fn query_pets<S: Storage, A: Api, Q: Querier>(deps: &Extern<S, A, Q>,page_num:u64,page_size:u64)->StdResult<Vec<Pet>>{
+    Ok(Pet::get_pets(deps, page_num.try_into().unwrap(), page_size.try_into().unwrap())?)
+}
+/*fn query_feeding<S: Storage, A: Api, Q: Querier>(
     deps: &Extern<S, A, Q>,
 ) -> StdResult<LastFeedingResponse> {
     Ok(LastFeedingResponse {
         timestamp: State::get_last_feeding(deps)?,
     })
-}
-
-
+}*/
 
 /*#[cfg(test)]
 mod tests {

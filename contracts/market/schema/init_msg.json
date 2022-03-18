@@ -3,10 +3,18 @@
   "title": "InitMsg",
   "type": "object",
   "required": [
+    "pet_addr",
+    "pet_hash",
     "snip_addr",
     "snip_hash"
   ],
   "properties": {
+    "pet_addr": {
+      "$ref": "#/definitions/HumanAddr"
+    },
+    "pet_hash": {
+      "type": "string"
+    },
     "snip_addr": {
       "$ref": "#/definitions/HumanAddr"
     },

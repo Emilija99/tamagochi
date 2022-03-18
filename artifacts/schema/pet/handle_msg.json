@@ -12,13 +12,40 @@
           "type": "object",
           "required": [
             "amount",
+            "pet_name",
             "viewing_key"
           ],
           "properties": {
             "amount": {
               "$ref": "#/definitions/Uint128"
             },
+            "pet_name": {
+              "type": "string"
+            },
             "viewing_key": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "required": [
+        "create_new_pet"
+      ],
+      "properties": {
+        "create_new_pet": {
+          "type": "object",
+          "required": [
+            "owner",
+            "pet_name"
+          ],
+          "properties": {
+            "owner": {
+              "$ref": "#/definitions/HumanAddr"
+            },
+            "pet_name": {
               "type": "string"
             }
           }
@@ -27,6 +54,9 @@
     }
   ],
   "definitions": {
+    "HumanAddr": {
+      "type": "string"
+    },
     "Uint128": {
       "type": "string"
     }

@@ -1,26 +1,29 @@
 use cosmwasm_std::{
-    debug_print, to_binary, Api, Binary, Coin, Env, Extern, HandleResponse, InitResponse, Querier,
-    StdResult, Storage, Uint128,
+     to_binary, Api, Binary, Coin, Env, Extern, HandleResponse, InitResponse, Querier,
+    StdError, StdResult, Storage, Uint128,
 };
 
-use crate::msg::{ HandleMsg, InitMsg, QueryMsg, TotalAmountResponse};
-use crate::state::{config, config_read, State};
+use crate::msg::{HandleMsg, InitMsg, QueryMsg, TotalAmountResponse};
+use crate::state::{config, config_read, ContractInfo, State};
 
 pub fn init<S: Storage, A: Api, Q: Querier>(
     deps: &mut Extern<S, A, Q>,
     env: Env,
     msg: InitMsg,
 ) -> StdResult<InitResponse> {
-    
     let state = State {
         total_amount: cosmwasm_std::Uint128(0),
-        snip_addr: msg.snip_addr,
-        snip_hash: msg.snip_hash,
+        food_contract: ContractInfo {
+            addr: msg.snip_addr,
+            hash: msg.snip_hash,
+        },
+        pet_contract: ContractInfo {
+            addr: msg.pet_addr,
+            hash: msg.pet_hash,
+        },
     };
 
     config(&mut deps.storage).save(&state)?;
-
-    
 
     Ok(InitResponse::default())
 }
@@ -32,6 +35,7 @@ pub fn handle<S: Storage, A: Api, Q: Querier>(
 ) -> StdResult<HandleResponse> {
     match msg {
         HandleMsg::BuyFood {} => try_buy_food(deps, env),
+        HandleMsg::BuyPet { pet_name } => try_buy_pet(deps, env, pet_name),
     }
 }
 
@@ -41,16 +45,35 @@ pub fn try_buy_food<S: Storage, A: Api, Q: Querier>(
 ) -> StdResult<HandleResponse> {
     let amount = calculate_amount(env.message.sent_funds);
     let food_amount = Uint128(amount.u128() / 10000);
-    let data=format!("Contract code and hash: {} {},amount: {},food_amount:{},recipient:{}",State::get_snip_hash(deps)?,State::get_snip_addr(deps)?,&amount,&food_amount,&env.message.sender);
+   
     State::increase_total_amount(deps, amount)?;
     return State::mint_tokens(
         env.message.sender,
         food_amount,
         State::get_snip_hash(deps)?,
         State::get_snip_addr(deps)?,
-        to_binary(&data)?
+       
     );
 }
+
+pub fn try_buy_pet<S: Storage, A: Api, Q: Querier>(
+    deps: &mut Extern<S, A, Q>,
+    env: Env,
+    pet_name: String,
+) -> StdResult<HandleResponse> {
+    let amount = calculate_amount(env.message.sent_funds);
+    if amount < Uint128(10000) {
+        return Err(StdError::generic_err("Not enough tokens"));
+    }
+    State::increase_total_amount(deps, amount)?;
+    return State::buy_pet(
+        env.message.sender,
+        &pet_name,
+        State::get_pet_hash(deps)?,
+        State::get_pet_addr(deps)?,
+    );
+}
+
 pub fn calculate_amount(coins: Vec<Coin>) -> Uint128 {
     coins
         .iter()
