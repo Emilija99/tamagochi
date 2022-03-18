@@ -1,0 +1,1 @@
+/home/ema/proj2/target/wasm32-unknown-unknown/release/pet.wasm: /home/ema/proj2/contracts/pet/src/contract.rs /home/ema/proj2/contracts/pet/src/lib.rs /home/ema/proj2/contracts/pet/src/msg.rs /home/ema/proj2/contracts/pet/src/state.rs

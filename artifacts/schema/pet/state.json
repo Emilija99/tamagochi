@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "State",
+  "type": "object",
+  "required": [
+    "pet",
+    "snip_info"
+  ],
+  "properties": {
+    "pet": {
+      "$ref": "#/definitions/Pet"
+    },
+    "snip_info": {
+      "$ref": "#/definitions/SnipInfo"
+    }
+  },
+  "definitions": {
+    "HumanAddr": {
+      "type": "string"
+    },
+    "Pet": {
+      "type": "object",
+      "required": [
+        "last_feeding"
+      ],
+      "properties": {
+        "last_feeding": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    },
+    "SnipInfo": {
+      "type": "object",
+      "required": [
+        "addr",
+        "hash"
+      ],
+      "properties": {
+        "addr": {
+          "$ref": "#/definitions/HumanAddr"
+        },
+        "hash": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+'{"name":"FOOD","symbol":"FOOD","decimals":4,"prng_seed":"YXdkYXdkYXdkd2FkYXdkZA==", "config": {"enable_mint": true,"enable_burn":true,"public_total_supply":true}}'
+docker exec -it secretdev /bin/bash
+
+secretd tx compute store snip20.wasm.gz --from b --gas 3000000 -y
+secretd tx compute instantiate 1 '{"name":"FOOD","symbol":"FOOD","decimals":4,"prng_seed":"YXdkYXdkYXdkd2FkYXdkZA==", "config": {"enable_mint": true,"enable_deposit": true,"enable_burn":true,"public_total_supply":true}}' --from a --gas 30000000 -y --label "teawdawsttt"
+secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"deposit": {}}' --amount 10000uscrt --from a
+secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"deposit": {}}' --amount 10000uscrt --from b
+secretd q compute list-code 
+secretd q compute list-contract-by-code 1
+
+secretd q compute query secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"balance": {"address":"secret15xhwzx7ulc3tuwjsskapulxv8ggc33vqavqtyj", "key":"api_key_/NO0E9kylCLcZL+JK3LAiSCb5to+BshnS+XedKOOV7U="}}'
+secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"create_viewing_key": {"entropy": "hey"}}' --from b
+secretd q compute tx <TX_HASH>
+secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"send": {"recipient":"secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf", "amount":"1000", "msg":"eyJtb3ZlMSI6InJvY2siLCJyb29tX2lkIjowfQ==", "padding":""}}' --from a
+secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"create_viewing_key": {"entropy": "hey"}}' --from a
+secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"send": {"recipient":"secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf", "amount":"1000", "msg":"eyJtb3ZlMSI6InBhcGVyIiwicm9vbV9pZCI6MH0=", "padding":""}}' --from b
+
+secretd q compute query 
+secretd q compute query secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf '{"amount":{}}'
+secretd q compute query secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf '{"winner":{"room_id":0}}'
+
+//set minters
+secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"set_minters": {"minters":["secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf"], "padding":""}}' --from a
+//query minters
+secretd q compute query secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"minters":{}}'
+//query token info
+secretd q compute query secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"token_info":{}}'
+//buy food tokens
+secretd tx compute execute secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf '{"buy_food":{}}' --from a --amount 10000000uscrt
+//send to food contract
+secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"send": {"recipient":"secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh", "amount":"102", "msg":"ImFwaV9rZXlfUldlUzJOb1d5U1ZDZUFGUDJBUWNRRHF5ajFSc1dGSHRWd2ZRVEh6dE4yWT0i", "padding":""}}' --from a
+//query amount
+secretd q compute query secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh '{"query_amount":{}}'
+//give allowance
+secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"increase_allowance":{"spender":"secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh","amount":"150","padding":""}}' --from a
+//feed pet
+secretd tx compute execute secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh '{"feed_pet":{"amount":"120","viewing_key":"api_key_/NO0E9kylCLcZL+JK3LAiSCb5to+BshnS+XedKOOV7U="}}' --from a
+//query is last feeding of pet
+secretd q compute query secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh '{"last_feeding":{}}'

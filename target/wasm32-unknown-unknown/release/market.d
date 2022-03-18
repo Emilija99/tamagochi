@@ -1,0 +1,1 @@
+/home/ema/proj2/target/wasm32-unknown-unknown/release/market.wasm: /home/ema/proj2/contracts/market/src/contract.rs /home/ema/proj2/contracts/market/src/lib.rs /home/ema/proj2/contracts/market/src/msg.rs /home/ema/proj2/contracts/market/src/state.rs

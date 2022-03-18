@@ -1,0 +1,10 @@
+/home/ema/proj2/target/wasm32-unknown-unknown/release/deps/cosmwasm_schema-137b50cc6755521c.rmeta: /home/ema/.cargo/git/checkouts/secretnetwork-2885a5c51d1243af/004c6bc/cosmwasm/packages/schema/src/lib.rs /home/ema/.cargo/git/checkouts/secretnetwork-2885a5c51d1243af/004c6bc/cosmwasm/packages/schema/src/casing.rs /home/ema/.cargo/git/checkouts/secretnetwork-2885a5c51d1243af/004c6bc/cosmwasm/packages/schema/src/export.rs /home/ema/.cargo/git/checkouts/secretnetwork-2885a5c51d1243af/004c6bc/cosmwasm/packages/schema/src/remove.rs
+
+/home/ema/proj2/target/wasm32-unknown-unknown/release/deps/libcosmwasm_schema-137b50cc6755521c.rlib: /home/ema/.cargo/git/checkouts/secretnetwork-2885a5c51d1243af/004c6bc/cosmwasm/packages/schema/src/lib.rs /home/ema/.cargo/git/checkouts/secretnetwork-2885a5c51d1243af/004c6bc/cosmwasm/packages/schema/src/casing.rs /home/ema/.cargo/git/checkouts/secretnetwork-2885a5c51d1243af/004c6bc/cosmwasm/packages/schema/src/export.rs /home/ema/.cargo/git/checkouts/secretnetwork-2885a5c51d1243af/004c6bc/cosmwasm/packages/schema/src/remove.rs
+
+/home/ema/proj2/target/wasm32-unknown-unknown/release/deps/cosmwasm_schema-137b50cc6755521c.d: /home/ema/.cargo/git/checkouts/secretnetwork-2885a5c51d1243af/004c6bc/cosmwasm/packages/schema/src/lib.rs /home/ema/.cargo/git/checkouts/secretnetwork-2885a5c51d1243af/004c6bc/cosmwasm/packages/schema/src/casing.rs /home/ema/.cargo/git/checkouts/secretnetwork-2885a5c51d1243af/004c6bc/cosmwasm/packages/schema/src/export.rs /home/ema/.cargo/git/checkouts/secretnetwork-2885a5c51d1243af/004c6bc/cosmwasm/packages/schema/src/remove.rs
+
+/home/ema/.cargo/git/checkouts/secretnetwork-2885a5c51d1243af/004c6bc/cosmwasm/packages/schema/src/lib.rs:
+/home/ema/.cargo/git/checkouts/secretnetwork-2885a5c51d1243af/004c6bc/cosmwasm/packages/schema/src/casing.rs:
+/home/ema/.cargo/git/checkouts/secretnetwork-2885a5c51d1243af/004c6bc/cosmwasm/packages/schema/src/export.rs:
+/home/ema/.cargo/git/checkouts/secretnetwork-2885a5c51d1243af/004c6bc/cosmwasm/packages/schema/src/remove.rs:
