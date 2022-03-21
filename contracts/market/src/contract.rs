@@ -6,17 +6,20 @@ use cosmwasm_std::{
 use crate::msg::{HandleMsg, InitMsg, QueryMsg, TotalAmountResponse};
 use crate::state::{config, config_read, ContractInfo, State};
 
+
 pub fn init<S: Storage, A: Api, Q: Querier>(
     deps: &mut Extern<S, A, Q>,
     env: Env,
     msg: InitMsg,
 ) -> StdResult<InitResponse> {
+
     let state = State {
         total_amount: cosmwasm_std::Uint128(0),
         food_contract: ContractInfo {
             addr: msg.snip_addr,
             hash: msg.snip_hash,
         },
+        pet_price: msg.pet_price,
        
     };
 
@@ -64,7 +67,7 @@ pub fn try_buy_pet<S: Storage, A: Api, Q: Querier>(
     pet_hash: String,
 ) -> StdResult<HandleResponse> {
     let amount = calculate_amount(env.message.sent_funds);
-    if amount < Uint128(10000) {
+    if amount < State::get_pet_price(deps)? {
         return Err(StdError::generic_err("Not enough tokens"));
     }
     State::increase_total_amount(deps, amount)?;

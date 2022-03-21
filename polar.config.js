@@ -1,13 +1,13 @@
 const accounts = [
   {
     name: 'a',
-    address: 'secret1dm9s4w2usut2taeds3662azj5wl59ty8zjgfx9',
-    mnemonic: 'all glad vessel boat begin identify inject scale mystery cigar danger exact negative nothing sweet planet praise siege pull surface prize inspire shed patrol'
+    address: 'secret1wws59d93znpn6jauza4vrmmx26q5gq40n3xr2c',
+    mnemonic: 'person analyst bottom lawsuit brand plunge state upset gaze crater swing pear street praise awesome group worry plate enrich envelope zone ship such fame'
   },
   {
     name: 'b',
-    address: 'secret1897wspmlwk8k2vh8cppezucef3ld0grwmmymr2',
-    mnemonic: 'spray pool edit can wage scan noodle welcome disease afraid skull mushroom ship harvest pepper venture tape eye parade maid buddy later slab advance'
+    address: 'secret16dxm8f3qkk8x2hlg3mpr8s5c8ccq9em6hdevqw',
+    mnemonic: 'either depth rule margin wagon year clog slight salute liquid whip actual recipe fringe cheap april icon episode truth topic skate need strong size'
   }
 ];
 

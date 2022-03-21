@@ -7,6 +7,7 @@ pub struct InitMsg {
   
     pub snip_addr:HumanAddr,
     pub snip_hash:String,
+    pub pet_price:Uint128
    
 }
 

@@ -3,10 +3,14 @@
   "title": "InitMsg",
   "type": "object",
   "required": [
+    "pet_price",
     "snip_addr",
     "snip_hash"
   ],
   "properties": {
+    "pet_price": {
+      "$ref": "#/definitions/Uint128"
+    },
     "snip_addr": {
       "$ref": "#/definitions/HumanAddr"
     },
@@ -16,6 +20,9 @@
   },
   "definitions": {
     "HumanAddr": {
+      "type": "string"
+    },
+    "Uint128": {
       "type": "string"
     }
   }

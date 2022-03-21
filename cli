@@ -31,8 +31,8 @@ secretd q compute query secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"token_i
 secretd tx compute execute secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf '{"buy_food":{}}' --from a --amount 10000000uscrt
 secretd tx compute execute secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf '{"buy_food":{}}' --from b --amount 10000000uscrt
 //buy pet
-secretd tx compute execute secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf '{"buy_pet":{"pet_name":"pet1","pet_addr":"secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh","pet_hash":"b5cf2866f31204d2fca2c72bf4335691b1b4cad15565c5556641cff7968a1d3a"}}' --from a --amount 100000uscrt
-secretd tx compute execute secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf '{"buy_pet":{"pet_name":"pet2","pet_addr":"secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh","pet_hash":"b5cf2866f31204d2fca2c72bf4335691b1b4cad15565c5556641cff7968a1d3a"}}' --from b --amount 100000uscrt
+secretd tx compute execute secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf '{"buy_pet":{"pet_name":"pet1","pet_addr":"secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh","pet_hash":"fd26544301dcbea22b5f5500ce4c52eac09f2ae01d0c97bd81f642ac24e7cff7"}}' --from a --amount 100000uscrt
+secretd tx compute execute secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf '{"buy_pet":{"pet_name":"pet2","pet_addr":"secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh","pet_hash":"fd26544301dcbea22b5f5500ce4c52eac09f2ae01d0c97bd81f642ac24e7cff7"}}' --from b --amount 100000uscrt
 //send to food contract
 secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"send": {"recipient":"secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh", "amount":"102", "msg":"ImFwaV9rZXlfUldlUzJOb1d5U1ZDZUFGUDJBUWNRRHF5ajFSc1dGSHRWd2ZRVEh6dE4yWT0i", "padding":""}}' --from a
 //query amount
@@ -49,6 +49,8 @@ secretd q compute query secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh '{"last_fe
 
 
 //query pets
-secretd q compute query secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh '{"pets":{"page_num":1, "page_size":5}}'
+secretd q compute query secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh '{"pets":{"page_num":1, "page_size":5,"viewing_key":"api_key_OAPv/N0RHzDUI4TMbeNc3t20YGkWV0P+wcOfK2MGHGA=","address":"secret1wws59d93znpn6jauza4vrmmx26q5gq40n3xr2c"}}'
 //query pet
 secretd q compute query secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh '{"pet":{"name":"pet2"}}'
+//create viewing key for pet contract
+secretd tx compute execute secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh '{"create_viewing_key":{"entropy":"abcd"}}' --from a

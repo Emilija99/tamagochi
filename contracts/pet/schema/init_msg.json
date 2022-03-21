@@ -4,22 +4,63 @@
   "type": "object",
   "required": [
     "market_addr",
-    "snip_addr",
-    "snip_hash"
+    "pet_info",
+    "snip_info"
   ],
   "properties": {
     "market_addr": {
       "$ref": "#/definitions/HumanAddr"
     },
-    "snip_addr": {
-      "$ref": "#/definitions/HumanAddr"
+    "pet_info": {
+      "$ref": "#/definitions/PetInfo"
     },
-    "snip_hash": {
-      "type": "string"
+    "snip_info": {
+      "$ref": "#/definitions/ContractInfo"
     }
   },
   "definitions": {
+    "ContractInfo": {
+      "type": "object",
+      "required": [
+        "addr",
+        "hash"
+      ],
+      "properties": {
+        "addr": {
+          "$ref": "#/definitions/HumanAddr"
+        },
+        "hash": {
+          "type": "string"
+        }
+      }
+    },
     "HumanAddr": {
+      "type": "string"
+    },
+    "PetInfo": {
+      "type": "object",
+      "required": [
+        "alive_hours",
+        "feeding_price",
+        "full_hours"
+      ],
+      "properties": {
+        "alive_hours": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "feeding_price": {
+          "$ref": "#/definitions/Uint128"
+        },
+        "full_hours": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    },
+    "Uint128": {
       "type": "string"
     }
   }

@@ -4,11 +4,15 @@
   "type": "object",
   "required": [
     "food_contract",
+    "pet_price",
     "total_amount"
   ],
   "properties": {
     "food_contract": {
       "$ref": "#/definitions/ContractInfo"
+    },
+    "pet_price": {
+      "$ref": "#/definitions/Uint128"
     },
     "total_amount": {
       "$ref": "#/definitions/Uint128"

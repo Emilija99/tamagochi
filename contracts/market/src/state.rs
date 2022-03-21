@@ -2,8 +2,8 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use cosmwasm_std::{
-    to_binary, Api, CosmosMsg, Extern, HandleResponse, HumanAddr, Querier, StdError,
-    StdResult, Storage, Uint128, WasmMsg,
+    to_binary, Api, CosmosMsg, Extern, HandleResponse, HumanAddr, Querier, StdError, StdResult,
+    Storage, Uint128, WasmMsg,
 };
 use cosmwasm_storage::{singleton, singleton_read, ReadonlySingleton, Singleton};
 use secret_toolkit::snip20::mint_msg;
@@ -21,8 +21,8 @@ pub struct ContractInfo {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct State {
     pub total_amount: Uint128,
+    pub pet_price: Uint128,
     pub food_contract: ContractInfo,
-   
 }
 
 impl State {
@@ -37,8 +37,11 @@ impl State {
     ) -> Result<String, StdError> {
         Ok(config_read(&deps.storage).load()?.food_contract.hash)
     }
-
-   
+    pub fn get_pet_price<S: Storage, A: Api, Q: Querier>(
+        deps: &Extern<S, A, Q>,
+    ) -> Result<Uint128, StdError> {
+        Ok(config_read(&deps.storage).load()?.pet_price)
+    }
 
     pub fn increase_total_amount<S: Storage, A: Api, Q: Querier>(
         deps: &mut Extern<S, A, Q>,
@@ -55,7 +58,6 @@ impl State {
         amount: Uint128,
         contract_hash: String,
         contract_addr: HumanAddr,
-       
     ) -> StdResult<HandleResponse> {
         let message = mint_msg(
             recipient,

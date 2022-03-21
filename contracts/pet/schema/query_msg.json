@@ -30,10 +30,15 @@
         "pets": {
           "type": "object",
           "required": [
+            "address",
             "page_num",
-            "page_size"
+            "page_size",
+            "viewing_key"
           ],
           "properties": {
+            "address": {
+              "$ref": "#/definitions/HumanAddr"
+            },
             "page_num": {
               "type": "integer",
               "format": "uint64",
@@ -43,10 +48,18 @@
               "type": "integer",
               "format": "uint64",
               "minimum": 0.0
+            },
+            "viewing_key": {
+              "type": "string"
             }
           }
         }
       }
     }
-  ]
+  ],
+  "definitions": {
+    "HumanAddr": {
+      "type": "string"
+    }
+  }
 }

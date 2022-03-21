@@ -1,8 +1,8 @@
 default:
   deployInfo:
     codeId: 3
-    contractCodeHash: b5cf2866f31204d2fca2c72bf4335691b1b4cad15565c5556641cff7968a1d3a
-    deployTimestamp: Mon Mar 21 2022 10:07:12 GMT+0100 (Central European Standard Time)
+    contractCodeHash: fd26544301dcbea22b5f5500ce4c52eac09f2ae01d0c97bd81f642ac24e7cff7
+    deployTimestamp: Mon Mar 21 2022 14:22:37 GMT+0100 (Central European Standard Time)
   instantiateInfo:
     contractAddress: secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh
-    instantiateTimestamp: Mon Mar 21 2022 10:07:12 GMT+0100 (Central European Standard Time)
+    instantiateTimestamp: Mon Mar 21 2022 14:22:37 GMT+0100 (Central European Standard Time)

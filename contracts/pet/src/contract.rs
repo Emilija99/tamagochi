@@ -1,12 +1,13 @@
 use std::convert::TryInto;
-
+//use secret_toolkit::crypto
 use cosmwasm_std::{
     to_binary, to_vec, Api, Binary, Env, Extern, HandleResponse, HumanAddr, InitResponse, Querier,
     StdError, StdResult, Storage, Uint128,
 };
 
-use crate::msg::{HandleMsg, InitMsg,  QueryMsg};
+use crate::msg::{HandleMsg, InitMsg, QueryMsg, ViewingKeyResponse};
 use crate::state::{config, ContractInfo, Pet, State};
+use crate::view_key::{ViewingKey, ViewingKeyStore};
 
 pub fn init<S: Storage, A: Api, Q: Querier>(
     deps: &mut Extern<S, A, Q>,
@@ -15,13 +16,9 @@ pub fn init<S: Storage, A: Api, Q: Querier>(
 ) -> StdResult<InitResponse> {
     deps.storage.set(b"total", &to_vec(&0)?);
     let state = State {
-        food_contract: ContractInfo {
-            addr: msg.snip_addr,
-            hash: msg.snip_hash,
-        },
-
-      
+        food_contract: msg.snip_info,
         market_addr: msg.market_addr,
+        pet_info: msg.pet_info,
     };
 
     config(&mut deps.storage).save(&state)?;
@@ -40,7 +37,21 @@ pub fn handle<S: Storage, A: Api, Q: Querier>(
             pet_name,
         } => try_feed(deps, env, amount, viewing_key, pet_name),
         HandleMsg::CreateNewPet { pet_name, owner } => try_create_pet(deps, env, pet_name, owner),
+        HandleMsg::CreateViewingKey { entropy } => try_create_viewing_key(deps, env, entropy),
     }
+}
+
+pub fn try_create_viewing_key<S: Storage, A: Api, Q: Querier>(
+    deps: &mut Extern<S, A, Q>,
+    env: Env,
+    entropy: String,
+) -> StdResult<HandleResponse>{
+    let viewing_key=ViewingKey::create(&mut deps.storage, &env, &env.message.sender, entropy.as_bytes());
+    Ok(HandleResponse{
+        messages: vec![],
+        log: vec![],
+        data:Some(to_binary(&ViewingKeyResponse{ key:viewing_key })?),
+    })
 }
 
 pub fn try_create_pet<S: Storage, A: Api, Q: Querier>(
@@ -79,10 +90,12 @@ pub fn try_feed<S: Storage, A: Api, Q: Querier>(
     {
         return Err(StdError::unauthorized());
     }
-    if Pet::can_pet_be_fed(pet.last_feeding, env.block.time) == false {
+    if State::can_pet_be_fed(deps, pet.last_feeding, env.block.time)? == false {
         return Err(StdError::generic_err("Pet can't be fed now"));
     }
-    if State::check_balance(deps, viewing_key, env.message.sender.clone())? < Uint128(100) {
+    if State::check_balance(deps, viewing_key, env.message.sender.clone())?
+        < State::get_pet_info(deps)?.feeding_price
+    {
         return Err(StdError::generic_err("Not enough tokens"));
     }
 
@@ -96,16 +109,39 @@ pub fn query<S: Storage, A: Api, Q: Querier>(
     msg: QueryMsg,
 ) -> StdResult<Binary> {
     match msg {
-        QueryMsg::Pet { name } => to_binary(&query_pet(deps,&name)?),
-        QueryMsg::Pets { page_num, page_size } => to_binary(&query_pets(deps,page_num,page_size)?),
+        QueryMsg::Pet { name } => to_binary(&query_pet(deps, &name)?),
+        QueryMsg::Pets {
+            page_num,
+            page_size,
+            viewing_key,
+            address,
+        } => to_binary(&query_pets(
+            deps,
+            page_num,
+            page_size,
+            viewing_key,
+            address,
+        )?),
     }
 }
-fn query_pet<S: Storage, A: Api, Q: Querier>(deps: &Extern<S, A, Q>,name:&str)->StdResult<Pet>{
+fn query_pet<S: Storage, A: Api, Q: Querier>(deps: &Extern<S, A, Q>, name: &str) -> StdResult<Pet> {
     Ok(Pet::get_pet(deps, name)?)
 }
 
-fn query_pets<S: Storage, A: Api, Q: Querier>(deps: &Extern<S, A, Q>,page_num:u64,page_size:u64)->StdResult<Vec<Pet>>{
-    Ok(Pet::get_pets(deps, page_num.try_into().unwrap(), page_size.try_into().unwrap())?)
+fn query_pets<S: Storage, A: Api, Q: Querier>(
+    deps: &Extern<S, A, Q>,
+    page_num: u64,
+    page_size: u64,
+    viewing_key: String,
+    address: HumanAddr,
+) -> StdResult<Vec<Pet>> {
+    ViewingKey::check(&deps.storage, &address, &viewing_key)?;
+    Ok(Pet::get_pets(
+        deps,
+        page_num.try_into().unwrap(),
+        page_size.try_into().unwrap(),
+        deps.api.canonical_address(&address)?,
+    )?)
 }
 /*fn query_feeding<S: Storage, A: Api, Q: Querier>(
     deps: &Extern<S, A, Q>,
