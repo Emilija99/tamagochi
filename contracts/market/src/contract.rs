@@ -1,5 +1,5 @@
 use cosmwasm_std::{
-     to_binary, Api, Binary, Coin, Env, Extern, HandleResponse, InitResponse, Querier,
+    to_binary, Api, Binary, Coin, Env, Extern, HandleResponse, HumanAddr, InitResponse, Querier,
     StdError, StdResult, Storage, Uint128,
 };
 
@@ -17,10 +17,7 @@ pub fn init<S: Storage, A: Api, Q: Querier>(
             addr: msg.snip_addr,
             hash: msg.snip_hash,
         },
-        pet_contract: ContractInfo {
-            addr: msg.pet_addr,
-            hash: msg.pet_hash,
-        },
+       
     };
 
     config(&mut deps.storage).save(&state)?;
@@ -35,7 +32,11 @@ pub fn handle<S: Storage, A: Api, Q: Querier>(
 ) -> StdResult<HandleResponse> {
     match msg {
         HandleMsg::BuyFood {} => try_buy_food(deps, env),
-        HandleMsg::BuyPet { pet_name } => try_buy_pet(deps, env, pet_name),
+        HandleMsg::BuyPet {
+            pet_name,
+            pet_addr,
+            pet_hash,
+        } => try_buy_pet(deps, env, pet_name, pet_addr, pet_hash),
     }
 }
 
@@ -45,14 +46,13 @@ pub fn try_buy_food<S: Storage, A: Api, Q: Querier>(
 ) -> StdResult<HandleResponse> {
     let amount = calculate_amount(env.message.sent_funds);
     let food_amount = Uint128(amount.u128() / 10000);
-   
+
     State::increase_total_amount(deps, amount)?;
     return State::mint_tokens(
         env.message.sender,
         food_amount,
         State::get_snip_hash(deps)?,
         State::get_snip_addr(deps)?,
-       
     );
 }
 
@@ -60,18 +60,15 @@ pub fn try_buy_pet<S: Storage, A: Api, Q: Querier>(
     deps: &mut Extern<S, A, Q>,
     env: Env,
     pet_name: String,
+    pet_addr: HumanAddr,
+    pet_hash: String,
 ) -> StdResult<HandleResponse> {
     let amount = calculate_amount(env.message.sent_funds);
     if amount < Uint128(10000) {
         return Err(StdError::generic_err("Not enough tokens"));
     }
     State::increase_total_amount(deps, amount)?;
-    return State::buy_pet(
-        env.message.sender,
-        &pet_name,
-        State::get_pet_hash(deps)?,
-        State::get_pet_addr(deps)?,
-    );
+    return State::buy_pet(env.message.sender, &pet_name, pet_hash, pet_addr);
 }
 
 pub fn calculate_amount(coins: Vec<Coin>) -> Uint128 {

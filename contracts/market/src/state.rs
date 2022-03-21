@@ -22,7 +22,7 @@ pub struct ContractInfo {
 pub struct State {
     pub total_amount: Uint128,
     pub food_contract: ContractInfo,
-    pub pet_contract: ContractInfo,
+   
 }
 
 impl State {
@@ -38,17 +38,7 @@ impl State {
         Ok(config_read(&deps.storage).load()?.food_contract.hash)
     }
 
-    pub fn get_pet_addr<S: Storage, A: Api, Q: Querier>(
-        deps: &Extern<S, A, Q>,
-    ) -> Result<HumanAddr, StdError> {
-        Ok(config_read(&deps.storage).load()?.pet_contract.addr)
-    }
-
-    pub fn get_pet_hash<S: Storage, A: Api, Q: Querier>(
-        deps: &Extern<S, A, Q>,
-    ) -> Result<String, StdError> {
-        Ok(config_read(&deps.storage).load()?.pet_contract.hash)
-    }
+   
 
     pub fn increase_total_amount<S: Storage, A: Api, Q: Querier>(
         deps: &mut Extern<S, A, Q>,

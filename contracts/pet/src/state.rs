@@ -74,12 +74,15 @@ impl Pet {
     ) -> Result<bool, StdError> {
         let store = ReadonlyPrefixedStorage::new(b"/pets/", &deps.storage);
 
-        let a_store = AppendStore::<Pet, _, _>::attach_with_serialization(&store, Json)
-            .ok_or(StdError::generic_err("Pets not created"))??;
-
-        Ok(a_store
-            .iter()
-            .any(|pet| pet.as_ref().unwrap().name.eq(pet_name)))
+        let a_store = AppendStore::<Pet, _, _>::attach_with_serialization(&store, Json);
+        if let Some(store) = a_store {
+            Ok(store?
+                .iter()
+                .any(|pet| pet.as_ref().unwrap().name.eq(pet_name)))
+        } else {
+            //kad se kreira prvi pet
+            Ok(false)
+        }
     }
 
     pub fn get_pet<S: Storage, A: Api, Q: Querier>(

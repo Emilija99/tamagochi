@@ -7,15 +7,14 @@ pub struct InitMsg {
   
     pub snip_addr:HumanAddr,
     pub snip_hash:String,
-    pub pet_addr:HumanAddr,
-    pub pet_hash:String
+   
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum HandleMsg {
    BuyFood{},
-   BuyPet{pet_name:String}
+   BuyPet{pet_name:String,pet_addr:HumanAddr,pet_hash:String}
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]

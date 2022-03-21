@@ -12,7 +12,9 @@ secretd q compute query secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"balance
 secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"create_viewing_key": {"entropy": "hey"}}' --from b
 secretd q compute tx <TX_HASH>
 secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"send": {"recipient":"secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf", "amount":"1000", "msg":"eyJtb3ZlMSI6InJvY2siLCJyb29tX2lkIjowfQ==", "padding":""}}' --from a
+//creaying viewing keys
 secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"create_viewing_key": {"entropy": "hey"}}' --from a
+secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"create_viewing_key": {"entropy": "hey1"}}' --from b
 secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"send": {"recipient":"secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf", "amount":"1000", "msg":"eyJtb3ZlMSI6InBhcGVyIiwicm9vbV9pZCI6MH0=", "padding":""}}' --from b
 
 secretd q compute query 
@@ -27,13 +29,26 @@ secretd q compute query secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"minters
 secretd q compute query secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"token_info":{}}'
 //buy food tokens
 secretd tx compute execute secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf '{"buy_food":{}}' --from a --amount 10000000uscrt
+secretd tx compute execute secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf '{"buy_food":{}}' --from b --amount 10000000uscrt
+//buy pet
+secretd tx compute execute secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf '{"buy_pet":{"pet_name":"pet1","pet_addr":"secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh","pet_hash":"b5cf2866f31204d2fca2c72bf4335691b1b4cad15565c5556641cff7968a1d3a"}}' --from a --amount 100000uscrt
+secretd tx compute execute secret10pyejy66429refv3g35g2t7am0was7ya6hvrzf '{"buy_pet":{"pet_name":"pet2","pet_addr":"secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh","pet_hash":"b5cf2866f31204d2fca2c72bf4335691b1b4cad15565c5556641cff7968a1d3a"}}' --from b --amount 100000uscrt
 //send to food contract
 secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"send": {"recipient":"secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh", "amount":"102", "msg":"ImFwaV9rZXlfUldlUzJOb1d5U1ZDZUFGUDJBUWNRRHF5ajFSc1dGSHRWd2ZRVEh6dE4yWT0i", "padding":""}}' --from a
 //query amount
 secretd q compute query secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh '{"query_amount":{}}'
 //give allowance
 secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"increase_allowance":{"spender":"secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh","amount":"150","padding":""}}' --from a
+secretd tx compute execute secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg '{"increase_allowance":{"spender":"secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh","amount":"150","padding":""}}' --from b
 //feed pet
-secretd tx compute execute secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh '{"feed_pet":{"amount":"120","viewing_key":"api_key_/NO0E9kylCLcZL+JK3LAiSCb5to+BshnS+XedKOOV7U="}}' --from a
+secretd tx compute execute secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh '{"feed_pet":{"amount":"120","viewing_key":"api_key_7fl6vQswbjNHTnYo9guWfFJvER7GsIhdQkJ1ppB0zl8=","pet_name":"pet1"}}' --from a
+secretd tx compute execute secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh '{"feed_pet":{"amount":"120","viewing_key":"api_key_2hu1yV9Ah8iue1IHwlC7/WV1sZ8ajgqZ5Rft8js93g8=","pet_name":"pet2"}}' --from b
 //query is last feeding of pet
 secretd q compute query secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh '{"last_feeding":{}}'
+
+
+
+//query pets
+secretd q compute query secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh '{"pets":{"page_num":1, "page_size":5}}'
+//query pet
+secretd q compute query secret1sh36qn08g4cqg685cfzmyxqv2952q6r8vqktuh '{"pet":{"name":"pet2"}}'

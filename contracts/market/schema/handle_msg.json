@@ -22,9 +22,17 @@
         "buy_pet": {
           "type": "object",
           "required": [
+            "pet_addr",
+            "pet_hash",
             "pet_name"
           ],
           "properties": {
+            "pet_addr": {
+              "$ref": "#/definitions/HumanAddr"
+            },
+            "pet_hash": {
+              "type": "string"
+            },
             "pet_name": {
               "type": "string"
             }
@@ -32,5 +40,10 @@
         }
       }
     }
-  ]
+  ],
+  "definitions": {
+    "HumanAddr": {
+      "type": "string"
+    }
+  }
 }
