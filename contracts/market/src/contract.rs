@@ -20,6 +20,7 @@ pub fn init<S: Storage, A: Api, Q: Querier>(
             hash: msg.snip_hash,
         },
         pet_price: msg.pet_price,
+        owner: deps.api.canonical_address(&env.message.sender)?,
        
     };
 
@@ -40,6 +41,7 @@ pub fn handle<S: Storage, A: Api, Q: Querier>(
             pet_addr,
             pet_hash,
         } => try_buy_pet(deps, env, pet_name, pet_addr, pet_hash),
+        HandleMsg::ChangePetPrice { price } => try_change_pet_price(deps, env, price),
     }
 }
 
@@ -72,6 +74,15 @@ pub fn try_buy_pet<S: Storage, A: Api, Q: Querier>(
     }
     State::increase_total_amount(deps, amount)?;
     return State::buy_pet(env.message.sender, &pet_name, pet_hash, pet_addr);
+}
+
+pub fn try_change_pet_price<S: Storage, A: Api, Q: Querier>(deps: &mut Extern<S, A, Q>,
+    env: Env,price:Uint128)-> StdResult<HandleResponse>{
+       if deps.api.canonical_address(&env.message.sender)?.ne(&State::get_owner(deps)?){
+            return Err(StdError::unauthorized())
+       }
+       State::change_pet_price(deps, price)?;
+       Ok(HandleResponse::default())
 }
 
 pub fn calculate_amount(coins: Vec<Coin>) -> Uint128 {

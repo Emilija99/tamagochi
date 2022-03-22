@@ -15,7 +15,8 @@ pub struct InitMsg {
 #[serde(rename_all = "snake_case")]
 pub enum HandleMsg {
    BuyFood{},
-   BuyPet{pet_name:String,pet_addr:HumanAddr,pet_hash:String}
+   BuyPet{pet_name:String,pet_addr:HumanAddr,pet_hash:String},
+   ChangePetPrice{price:Uint128}
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]

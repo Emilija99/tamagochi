@@ -5,8 +5,9 @@ use cosmwasm_std::{
     StdError, StdResult, Storage, Uint128,
 };
 
-use crate::msg::{HandleMsg, InitMsg, QueryMsg, ViewingKeyResponse};
-use crate::state::{config, ContractInfo, Pet, State};
+use crate::msg::{HandleMsg, InitMsg, PetInfo, QueryMsg, ViewingKeyResponse};
+use crate::pet::Pet;
+use crate::state::{config, State};
 use crate::view_key::{ViewingKey, ViewingKeyStore};
 
 pub fn init<S: Storage, A: Api, Q: Querier>(
@@ -19,6 +20,7 @@ pub fn init<S: Storage, A: Api, Q: Querier>(
         food_contract: msg.snip_info,
         market_addr: msg.market_addr,
         pet_info: msg.pet_info,
+        owner: deps.api.canonical_address(&env.message.sender)?,
     };
 
     config(&mut deps.storage).save(&state)?;
@@ -38,6 +40,9 @@ pub fn handle<S: Storage, A: Api, Q: Querier>(
         } => try_feed(deps, env, amount, viewing_key, pet_name),
         HandleMsg::CreateNewPet { pet_name, owner } => try_create_pet(deps, env, pet_name, owner),
         HandleMsg::CreateViewingKey { entropy } => try_create_viewing_key(deps, env, entropy),
+        HandleMsg::ChangePetParametres { pet_info } => {
+            try_change_pet_parametres(deps, env, pet_info)
+        }
     }
 }
 
@@ -45,13 +50,34 @@ pub fn try_create_viewing_key<S: Storage, A: Api, Q: Querier>(
     deps: &mut Extern<S, A, Q>,
     env: Env,
     entropy: String,
-) -> StdResult<HandleResponse>{
-    let viewing_key=ViewingKey::create(&mut deps.storage, &env, &env.message.sender, entropy.as_bytes());
-    Ok(HandleResponse{
+) -> StdResult<HandleResponse> {
+    let viewing_key = ViewingKey::create(
+        &mut deps.storage,
+        &env,
+        &env.message.sender,
+        entropy.as_bytes(),
+    );
+    Ok(HandleResponse {
         messages: vec![],
         log: vec![],
-        data:Some(to_binary(&ViewingKeyResponse{ key:viewing_key })?),
+        data: Some(to_binary(&ViewingKeyResponse { key: viewing_key })?),
     })
+}
+
+pub fn try_change_pet_parametres<S: Storage, A: Api, Q: Querier>(
+    deps: &mut Extern<S, A, Q>,
+    env: Env,
+    pet_info: PetInfo,
+) -> StdResult<HandleResponse> {
+    if deps
+        .api
+        .canonical_address(&env.message.sender)?
+        .ne(&State::get_owner(deps)?)
+    {
+        return Err(StdError::unauthorized());
+    }
+    State::change_pet_info(deps, pet_info)?;
+    Ok(HandleResponse::default())
 }
 
 pub fn try_create_pet<S: Storage, A: Api, Q: Querier>(
@@ -72,7 +98,7 @@ pub fn try_create_pet<S: Storage, A: Api, Q: Querier>(
         env.block.time,
         deps.api.canonical_address(&owner)?,
     );
-    Pet::add_new_pet(deps, &new_pet)?;
+    Pet::create(deps, &new_pet)?;
     Ok(HandleResponse::default())
 }
 
@@ -100,7 +126,7 @@ pub fn try_feed<S: Storage, A: Api, Q: Querier>(
     }
 
     pet.last_feeding = env.block.time;
-    Pet::update_pet(deps, &pet)?;
+    Pet::update(deps, &pet)?;
     State::burn_tokens(deps, amount, env.message.sender)
 }
 
@@ -109,7 +135,11 @@ pub fn query<S: Storage, A: Api, Q: Querier>(
     msg: QueryMsg,
 ) -> StdResult<Binary> {
     match msg {
-        QueryMsg::Pet { name } => to_binary(&query_pet(deps, &name)?),
+        QueryMsg::Pet {
+            name,
+            viewing_key,
+            address,
+        } => to_binary(&query_pet(deps, &name, viewing_key, address)?),
         QueryMsg::Pets {
             page_num,
             page_size,
@@ -124,7 +154,13 @@ pub fn query<S: Storage, A: Api, Q: Querier>(
         )?),
     }
 }
-fn query_pet<S: Storage, A: Api, Q: Querier>(deps: &Extern<S, A, Q>, name: &str) -> StdResult<Pet> {
+fn query_pet<S: Storage, A: Api, Q: Querier>(
+    deps: &Extern<S, A, Q>,
+    name: &str,
+    viewing_key: String,
+    address: HumanAddr,
+) -> StdResult<Pet> {
+    ViewingKey::check(&deps.storage, &address, &viewing_key)?;
     Ok(Pet::get_pet(deps, name)?)
 }
 
